@@ -101,7 +101,7 @@ searchBar.id = "sbid"
 searchBar.style.border = "5px solid black";
 searchBar.style.borderRadius = "5px 10px";
 searchBar.style.backgroundColor = "lightgrey";
-searchBar.style.marginLeft="725px";
+searchBar.style.marginLeft="1300px";
 searchBar.placeholder = "Search for a user";
 
 searchBarDiv.append(searchBar);
