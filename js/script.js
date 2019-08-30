@@ -101,7 +101,7 @@ searchBar.id = "sbid"
 searchBar.style.border = "5px solid black";
 searchBar.style.borderRadius = "5px 10px";
 searchBar.style.backgroundColor = "lightgrey";
-searchBar.style.marginLeft="1300px";
+searchBar.style.marginLeft="725px";
 searchBar.placeholder = "Search for a user";
 
 searchBarDiv.append(searchBar);
@@ -112,9 +112,15 @@ appendPageLinks(list);
 
 searchBar.addEventListener('keyup',function(event)
                            {
+    
+    if (document.querySelector(".noResults") != undefined)
+    {
+    document.querySelector(".noResults").remove();
+    }
+    
     //If the search bar is empty, just show the first page
     if (event.target.value === "")
-    {
+    {      
         clearLinks();
         showPage(list,1);
         appendPageLinks(list,1);
@@ -149,9 +155,22 @@ searchBar.addEventListener('keyup',function(event)
             person.style.display = 'none';
             
         }
-        
+              
 })
- 
+    if (searchResults === undefined || searchResults.length == 0) 
+    {
+        
+        let p = document.createElement("p");
+        p.textContent = "Sorry. No results were found.";
+        p.className = "noResults";
+        let page = document.querySelector(".page");
+        page.append(p);
+        
+        
+    // array empty or does not exist
+    }    
+        
+        
     clearLinks();
     showPage(searchResults,1);
     appendPageLinks(searchResults);
@@ -160,36 +179,3 @@ searchBar.addEventListener('keyup',function(event)
 
 })
                        
-        
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
