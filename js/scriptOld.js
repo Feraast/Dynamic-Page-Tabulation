@@ -2,16 +2,18 @@ let maxItemsPerPage = 10;
 let listItem = document.querySelectorAll('li');
 let docBody = document.body;
 
+let startIndex = 0;
+let endIndex = 0;
 
 // This function basically displays 10 items from the list and hides the rest
 function showPage(list,page)
 {
     
-let startIndex = page * maxItemsPerPage - maxItemsPerPage;
-let endIndex = page * maxItemsPerPage;
+startIndex = page * maxItemsPerPage - maxItemsPerPage;
+endIndex = page * maxItemsPerPage;
 
     
-for (let i = 0; i < listItem.length; i+=1)
+for (let i = 0; i < list.length; i+=1)
     {
         list[i].style.display = 'none';
     }
@@ -30,7 +32,7 @@ function appendPageLinks(list)
     let pageDiv = document.querySelector('.page');
     
     //Round up since if its like 23 links were gonna need 3 pages
-    let numberOfLinks = Math.ceil(parseInt (listItem.length) / maxItemsPerPage) ;
+    let numberOfLinks = Math.ceil(parseInt (list.length) / maxItemsPerPage) ;
     
     //Create a div tag to clearly indicate the place where the pagination buttons
     //go
@@ -78,30 +80,50 @@ function appendPageLinks(list)
 }
 
 showPage(listItem,1);
-appendPageLinks(docBody);
+appendPageLinks(listItem);
 
 //Exceeds expectations part
 
 var searchBar = document.createElement("INPUT");
 searchBar.setAttribute("type", "text");
+searchBar.style.border = "5px solid blue";
+searchBar.style.borderRadius = "5px";
+searchBar.style.backgroundColor = "lightgrey";
 
 page = document.querySelector('.page');
 page.insertBefore(searchBar,page.firstElementChild);
 
 searchBar.addEventListener('keyup',function(event)
                            {
+    //If the search bar is empty, just show the first page
+    if (event.target.value === "")
+    {
+        showPage(listItem,1);
+        
+    }
+    
+    else
+    
+    {
+    
     let counter = 0;
     let searchTerm = event.target.value.toLowerCase();
 
-    let people = document.querySelectorAll('li');
+    let people = document.getElementsByClassName('student-item cf');
+        
+    searchResults = [];    
     Array.from(people).forEach(function(person){
   
     let studentName = person.firstElementChild.textContent;
         
     if (studentName.toLowerCase().indexOf(searchTerm) != -1)
         {
-            person.style.display = 'block';
+            person.style.display = 'none';
+            person.style.boxShadow = '7px';
             counter+=1;
+            
+            searchResults.push(person);
+            
         }
     else 
         { 
@@ -110,8 +132,15 @@ searchBar.addEventListener('keyup',function(event)
         }
         
 })
-    appendPageLinks(docBody);
-    console.log(counter);
+    //I need to make a new list of persons only who have block style, and then
+    //use the function to make links and do all that shit for it
+    //console.log(counter);
+
+
+    }
+    showPage(searchResults,1);
+    appendPageLinks(searchResults);
+    console.log(searchResults[0].style.display);
 
 })
 
@@ -124,7 +153,7 @@ searchBar.addEventListener('keyup',function(event)
 
 
 
-
+//////////////////////BackupState
 
 
 
