@@ -1,104 +1,123 @@
 let maxItemsPerPage = 10;
-let listItem = document.querySelectorAll('li');
-let docBody = document.body;
+let list = document.querySelectorAll('li');
 
-let startIndex = 0;
-let endIndex = 0;
-
-// This function basically displays 10 items from the list and hides the rest
+//It takes in the list, and shows you the desired page
 function showPage(list,page)
 {
     
-startIndex = page * maxItemsPerPage - maxItemsPerPage;
-endIndex = page * maxItemsPerPage;
-
+let startIndex = ( (page-1)*10 ) ;
+let endIndex = (page*10 -1) ;
     
-for (let i = 0; i < list.length; i+=1)
+    
+//Only show the list items between the two indexes
+for (let i = 0; i < list.length; i+=1) 
     {
-        list[i].style.display = 'none';
+        if ( (i >= startIndex) && (i <= endIndex) )
+            { 
+                list[i].style.display = 'block'; 
+            }
+        else
+            {
+                list[i].style.display = 'none';
+            }
     }
     
-
-for (let i = startIndex; i < endIndex; i+=1)
-    {
-        list[i].style.display = 'block';
-    }
-
 }
 
 function appendPageLinks(list)
-{
-    //This is the section that contains the information about each person
-    let pageDiv = document.querySelector('.page');
+{      
+    //Create and append the div tag for the pagination buttons
+    let pagination = document.createElement('div');
+    pagination.className = 'pagination';
     
-    //Round up since if its like 23 links were gonna need 3 pages
-    let numberOfLinks = Math.ceil(parseInt (list.length) / maxItemsPerPage) ;
+    let page = document.querySelector(".page");
+    page.append(pagination);
     
-    //Create a div tag to clearly indicate the place where the pagination buttons
-    //go
-    let paginationLinksDiv = document.createElement('DIV');
-    paginationLinksDiv.className = 'pagination';
+    //Create the ul tag and append the li's to it.
+    let ul = document.createElement('ul');
     
-    //At the end of the pagination links, the div with the button should be put
-    pageDiv.appendChild(paginationLinksDiv);
-
-    //Add the unordered list to the pagination links div
-    let paginationLinksUl = document.createElement('UL');
-    paginationLinksUl.className = 'UlOfButtons';
-    paginationLinksDiv.appendChild(paginationLinksUl);
+    pagination.append(ul);
     
-    
-    //Go through each link and only activate the li of the page youre on
-    for (let i = 1; i <= numberOfLinks; i+=1)
+    for (let i = 1; i <= Math.ceil(parseInt (list.length) / maxItemsPerPage); i+= 1)
     {
-        let paginationLinksLi = document.createElement('LI');
-        let paginationLinksA = document.createElement('A');
- 
-        let liItem = paginationLinksUl.appendChild(paginationLinksLi);           let listItems = paginationLinksUl.children;
-
-        let liA = liItem.appendChild(paginationLinksA);
-        liA.textContent = i;
-        
-        liA.addEventListener('click', () => { 
-        showPage(listItem,liItem.textContent);
-            
-        for (let i = 0; i < numberOfLinks; i += 1)
-        {
-        listItems[i].className = '';
-        }
-            
-        liItem.className = 'active';
-            
-        } )
-        
+        let li = document.createElement('li');
+        let a = document.createElement('a');
+        a.href = "#";
+        a.textContent = i;
+        li.append(a);
+        ul.append(li);
     }
     
-    //Initialize by setting the first list item to have the class active
-    let listItems = paginationLinksUl.children;
-    listItems[0].className = 'active';
+    let paginationLinks = ul.children;
+        
+
+for (let i = 0; i < Math.ceil(parseInt (list.length) / maxItemsPerPage); i+= 1)
+{
+
+//Change the active button each time a new link is clicked
+paginationLinks[i].addEventListener('click', (event) => {
+    
+    
+    showPage(list,event.target.textContent);
+    for (let i = 0; i < Math.ceil( parseInt (list.length) / maxItemsPerPage ); i+=1)
+        {
+            paginationLinks[i].className = '';
+        }
+            
+            event.target.className = 'active';
+} );   
+  
+}
     
 }
 
-showPage(listItem,1);
-appendPageLinks(listItem);
 
-//Exceeds expectations part
+//For the search functionality, so it doesn't keep creating more and more links without clearing 
+//Previously created ones
+function clearLinks()
+{
+    let pagination = document.querySelector(".pagination");
+    while (pagination.hasChildNodes()) 
+    {
+      pagination.removeChild(pagination.firstChild);
+    }
+    
+    pagination.remove();
+}
 
-var searchBar = document.createElement("INPUT");
+
+let pageHeader = document.querySelector('.page-header');
+
+let searchBarDiv = document.createElement('div');
+searchBarDiv.className = "search-bar";
+
+
+pageHeader.append(searchBarDiv);
+
+//Create the dynamic search bar and set its attributes
+let searchBar = document.createElement('input');
 searchBar.setAttribute("type", "text");
-searchBar.style.border = "5px solid blue";
-searchBar.style.borderRadius = "5px";
+searchBar.id = "sbid"
+searchBar.style.border = "5px solid black";
+searchBar.style.borderRadius = "5px 10px";
 searchBar.style.backgroundColor = "lightgrey";
+searchBar.style.marginLeft="1300px";
+searchBar.placeholder = "Search for a user";
 
-page = document.querySelector('.page');
-page.insertBefore(searchBar,page.firstElementChild);
+searchBarDiv.append(searchBar);
+
+showPage(list,1);
+appendPageLinks(list);
+
 
 searchBar.addEventListener('keyup',function(event)
                            {
     //If the search bar is empty, just show the first page
     if (event.target.value === "")
     {
-        showPage(listItem,1);
+        clearLinks();
+        showPage(list,1);
+        appendPageLinks(list,1);
         
     }
     
@@ -110,7 +129,8 @@ searchBar.addEventListener('keyup',function(event)
     let searchTerm = event.target.value.toLowerCase();
 
     let people = document.getElementsByClassName('student-item cf');
-        
+    
+    //Store search results in an array, if the string exists in any of the users
     searchResults = [];    
     Array.from(people).forEach(function(person){
   
@@ -119,7 +139,6 @@ searchBar.addEventListener('keyup',function(event)
     if (studentName.toLowerCase().indexOf(searchTerm) != -1)
         {
             person.style.display = 'none';
-            person.style.boxShadow = '7px';
             counter+=1;
             
             searchResults.push(person);
@@ -132,28 +151,44 @@ searchBar.addEventListener('keyup',function(event)
         }
         
 })
-    //I need to make a new list of persons only who have block style, and then
-    //use the function to make links and do all that shit for it
-    //console.log(counter);
-
-
-    }
+ 
+    clearLinks();
     showPage(searchResults,1);
     appendPageLinks(searchResults);
-    console.log(searchResults[0].style.display);
+    }
+    
 
 })
-
-//while(searchBar.value === '')
-//    {
-//        
-//     showPage(listItem,1);   
-//        
-//    }
+                       
+        
 
 
 
-//////////////////////BackupState
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
